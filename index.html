@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>数列パズル + 全国ランキング</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🔢 数列パズル</h1>
+
+  <div id="game">
+    <p id="level">レベル 1</p>
+    <p id="sequence">読み込み中...</p>
+    <input type="number" id="answer" placeholder="次の数は？" />
+    <button onclick="checkAnswer()">回答する</button>
+    <p id="result"></p>
+  </div>
+
+  <div id="submitScore">
+    <input type="text" id="username" placeholder="ニックネーム" />
+    <button onclick="submitScore()">スコア送信</button>
+    <button onclick="quitGame()">やめる（スコア送信）</button>
+  </div>
+
+  <div id="ranking">
+    <h2>🏆 全国ランキング</h2>
+    <ul id="rankingList"></ul>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
