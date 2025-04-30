@@ -147,6 +147,12 @@ async function loadRanking() {
 window.checkAnswer = checkAnswer;
 window.submitScore = submitScore;
 window.quitGame = quitGame;
+    
+// ✅ ボタンクリックを明示的に設定（←これが確実）
+document.getElementById("checkBtn").addEventListener("click", checkAnswer);
+document.getElementById("submitBtn").addEventListener("click", submitScore);
+document.getElementById("quitBtn").addEventListener("click", quitGame);
+console.log("script.js は読み込まれました。");
 
   });
 }
