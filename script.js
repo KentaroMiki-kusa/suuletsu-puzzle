@@ -142,5 +142,11 @@ async function loadRanking() {
     const li = document.createElement("li");
     li.textContent = `${rank++}位 ${d.name}：レベル ${d.score}`;
     list.appendChild(li);
+    
+    // ✅ HTMLから呼び出せるようにする（重要！）
+window.checkAnswer = checkAnswer;
+window.submitScore = submitScore;
+window.quitGame = quitGame;
+
   });
 }
