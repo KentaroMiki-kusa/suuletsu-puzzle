@@ -9,7 +9,7 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-// ✅ Firebase構成（あなたのプロジェクト用）
+// ✅ Firebase構成
 const firebaseConfig = {
   apiKey: "AIzaSyDbiY1GR3kBT00qAgV0iMQ5meYCdYck1NU",
   authDomain: "suuletu.firebaseapp.com",
@@ -24,22 +24,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ✅ ゲーム用変数
 let level = 1;
 let problems = [];
 let randomIndexes = [];
 
-// ✅ 問題データを読み込み、ランダム順を生成
+// ✅ 問題読み込み & ランダム順生成
 fetch("problems_1000_full.json")
-  .then((res) => res.json())
-  .then((data) => {
+  .then(res => res.json())
+  .then(data => {
     problems = data;
     randomIndexes = shuffle(Array.from({ length: problems.length }, (_, i) => i));
     showProblem();
     loadRanking();
+  })
+  .catch(err => {
+    console.error("❌ JSON読み込みエラー:", err);
+    alert("問題データの読み込みに失敗しました。");
   });
 
-// ✅ シャッフル関数（Fisher-Yates）
+// ✅ シャッフル関数
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -48,7 +51,7 @@ function shuffle(array) {
   return array;
 }
 
-// ✅ 問題を表示する関数
+// ✅ 問題表示
 function showProblem() {
   if (level > problems.length) {
     document.getElementById("sequence").innerText = "🎉 全問クリア！";
@@ -65,6 +68,7 @@ function showProblem() {
   document.getElementById("result").innerText = "";
 }
 
+// ✅ 回答チェック
 function checkAnswer() {
   const input = document.getElementById("answer").value;
 
@@ -81,9 +85,8 @@ function checkAnswer() {
 
   const currentIndex = randomIndexes[level - 1];
   const correctRaw = problems[currentIndex].answer;
-
-  // 数字に変換してから比較（これが最強）
   const correct = parseInt(correctRaw, 10);
+
   const resultEl = document.getElementById("result");
 
   if (userAnswer === correct) {
@@ -92,21 +95,19 @@ function checkAnswer() {
     level++;
     setTimeout(showProblem, 1000);
   } else {
-    resultEl.innerText = `❌ 不正解。もう一度！（正解は ${correct}）`;
+    resultEl.innerText = "❌ 不正解。もう一度！";
     resultEl.style.color = "red";
   }
 }
 
-
-
-// ✅ スコア送信ボタン（通常）
+// ✅ スコア送信（通常）
 async function submitScore() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
   await sendScore(name, score);
 }
 
-// ✅ やめるボタンからの送信
+// ✅ やめるボタンから送信
 async function quitGame() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
@@ -116,7 +117,7 @@ async function quitGame() {
   }
 }
 
-// ✅ Firestore にスコア登録
+// ✅ Firestoreにスコア記録
 async function sendScore(name, score) {
   try {
     await addDoc(collection(db, "scores"), {
@@ -130,7 +131,7 @@ async function sendScore(name, score) {
   }
 }
 
-// ✅ 全国ランキング表示（上位10件）
+// ✅ ランキング表示（上位10件）
 async function loadRanking() {
   const list = document.getElementById("rankingList");
   list.innerHTML = "";
@@ -144,17 +145,12 @@ async function loadRanking() {
     const li = document.createElement("li");
     li.textContent = `${rank++}位 ${d.name}：レベル ${d.score}`;
     list.appendChild(li);
-    
-    // ✅ HTMLから呼び出せるようにする（重要！）
+  });
+}
+
+// ✅ グローバル登録：HTMLの onclick から呼べるようにする
 window.checkAnswer = checkAnswer;
 window.submitScore = submitScore;
 window.quitGame = quitGame;
-    
-// ✅ ボタンクリックを明示的に設定（←これが確実）
-document.getElementById("checkBtn").addEventListener("click", checkAnswer);
-document.getElementById("submitBtn").addEventListener("click", submitScore);
-document.getElementById("quitBtn").addEventListener("click", quitGame);
-console.log("script.js は読み込まれました。");
 
-  });
-}
+console.log("✅ script.js は正しく読み込まれました");
