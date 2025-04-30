@@ -65,7 +65,6 @@ function showProblem() {
   document.getElementById("result").innerText = "";
 }
 
-// ✅ 回答チェックの関数（強化版）
 function checkAnswer() {
   const input = document.getElementById("answer").value;
 
@@ -74,27 +73,30 @@ function checkAnswer() {
     return;
   }
 
-  const userAnswer = Number(input);
+  const userAnswer = parseInt(input, 10);
   if (isNaN(userAnswer)) {
     alert("有効な数字を入力してください！");
     return;
   }
 
   const currentIndex = randomIndexes[level - 1];
-  const correct = problems[currentIndex].answer;
+  const correctRaw = problems[currentIndex].answer;
+
+  // 数字に変換してから比較（これが最強）
+  const correct = parseInt(correctRaw, 10);
   const resultEl = document.getElementById("result");
 
-  // ✅ 数値として厳密比較（これで確実に判定）
-  if (parseInt(userAnswer) === parseInt(correct)) {
+  if (userAnswer === correct) {
     resultEl.innerText = "✅ 正解！";
     resultEl.style.color = "green";
     level++;
     setTimeout(showProblem, 1000);
   } else {
-    resultEl.innerText = "❌ 不正解。もう一度！";
+    resultEl.innerText = `❌ 不正解。もう一度！（正解は ${correct}）`;
     resultEl.style.color = "red";
   }
 }
+
 
 
 // ✅ スコア送信ボタン（通常）
