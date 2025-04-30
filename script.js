@@ -1,5 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 // Firebase構成
 const firebaseConfig = {
@@ -18,15 +26,27 @@ const db = getFirestore(app);
 
 let level = 1;
 let problems = [];
+let randomIndexes = [];
 
 fetch("problems_1000_full.json")
-  .then(res => res.json())
-  .then(data => {
+  .then((res) => res.json())
+  .then((data) => {
     problems = data;
+    randomIndexes = shuffle(Array.from({ length: problems.length }, (_, i) => i));
     showProblem();
     loadRanking();
   });
 
+// Fisher-Yates シャッフルでランダム順を作成
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// 出題表示
 function showProblem() {
   if (level > problems.length) {
     document.getElementById("sequence").innerText = "🎉 全問クリア！";
@@ -34,16 +54,20 @@ function showProblem() {
     return;
   }
 
-  const prob = problems[level - 1];
+  const currentIndex = randomIndexes[level - 1];
+  const prob = problems[currentIndex];
+
   document.getElementById("level").innerText = `レベル ${level} / ${problems.length}`;
   document.getElementById("sequence").innerText = prob.question;
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
 }
 
+// 回答チェック
 function checkAnswer() {
   const userAnswer = Number(document.getElementById("answer").value);
-  const correct = problems[level - 1].answer;
+  const currentIndex = randomIndexes[level - 1];
+  const correct = problems[currentIndex].answer;
   const resultEl = document.getElementById("result");
 
   if (userAnswer === correct) {
@@ -57,14 +81,14 @@ function checkAnswer() {
   }
 }
 
-// スコア送信（通常）
+// 通常のスコア送信
 async function submitScore() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
   await sendScore(name, score);
 }
 
-// やめるボタンでスコア送信
+// 「やめる（スコア送信）」ボタン処理
 async function quitGame() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
@@ -74,7 +98,7 @@ async function quitGame() {
   }
 }
 
-// Firestoreにスコアを登録
+// Firestoreにスコアを記録
 async function sendScore(name, score) {
   try {
     await addDoc(collection(db, "scores"), {
@@ -88,7 +112,7 @@ async function sendScore(name, score) {
   }
 }
 
-// ランキング読み込み
+// ランキング表示
 async function loadRanking() {
   const list = document.getElementById("rankingList");
   list.innerHTML = "";
@@ -97,7 +121,7 @@ async function loadRanking() {
   const docs = await getDocs(q);
   let rank = 1;
 
-  docs.forEach(doc => {
+  docs.forEach((doc) => {
     const d = doc.data();
     const li = document.createElement("li");
     li.textContent = `${rank++}位 ${d.name}：レベル ${d.score}`;
