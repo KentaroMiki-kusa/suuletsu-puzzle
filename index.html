@@ -12,14 +12,14 @@
     <p id="level">レベル 1</p>
     <p id="sequence">読み込み中...</p>
     <input type="number" id="answer" placeholder="次の数は？" />
-    <button onclick="checkAnswer()">回答する</button>
+    <button id="checkBtn">回答する</button>
     <p id="result"></p>
   </div>
 
   <div id="submitScore">
     <input type="text" id="username" placeholder="ニックネーム" />
-    <button onclick="submitScore()">スコア送信</button>
-    <button onclick="quitGame()">やめる（スコア送信）</button>
+    <button id="submitBtn">スコア送信</button>
+    <button id="quitBtn">やめる（スコア送信）</button>
   </div>
 
   <div id="ranking">
