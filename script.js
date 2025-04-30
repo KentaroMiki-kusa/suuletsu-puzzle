@@ -84,7 +84,8 @@ function checkAnswer() {
   const correct = problems[currentIndex].answer;
   const resultEl = document.getElementById("result");
 
-  if (userAnswer === correct) {
+  // ✅ 数値として厳密比較（これで確実に判定）
+  if (parseInt(userAnswer) === parseInt(correct)) {
     resultEl.innerText = "✅ 正解！";
     resultEl.style.color = "green";
     level++;
@@ -94,6 +95,7 @@ function checkAnswer() {
     resultEl.style.color = "red";
   }
 }
+
 
 // ✅ スコア送信ボタン（通常）
 async function submitScore() {
