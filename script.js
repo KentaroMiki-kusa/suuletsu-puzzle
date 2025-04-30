@@ -9,7 +9,7 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-// Firebase構成
+// ✅ Firebase構成（あなたのプロジェクト用）
 const firebaseConfig = {
   apiKey: "AIzaSyDbiY1GR3kBT00qAgV0iMQ5meYCdYck1NU",
   authDomain: "suuletu.firebaseapp.com",
@@ -20,14 +20,16 @@ const firebaseConfig = {
   measurementId: "G-8LVCYVGWQZ"
 };
 
-// Firebase初期化
+// ✅ Firebase初期化
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ✅ ゲーム用変数
 let level = 1;
 let problems = [];
 let randomIndexes = [];
 
+// ✅ 問題データを読み込み、ランダム順を生成
 fetch("problems_1000_full.json")
   .then((res) => res.json())
   .then((data) => {
@@ -37,7 +39,7 @@ fetch("problems_1000_full.json")
     loadRanking();
   });
 
-// Fisher-Yates シャッフルでランダム順を作成
+// ✅ シャッフル関数（Fisher-Yates）
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -46,7 +48,7 @@ function shuffle(array) {
   return array;
 }
 
-// 出題表示
+// ✅ 問題を表示する関数
 function showProblem() {
   if (level > problems.length) {
     document.getElementById("sequence").innerText = "🎉 全問クリア！";
@@ -63,9 +65,21 @@ function showProblem() {
   document.getElementById("result").innerText = "";
 }
 
-// 回答チェック
+// ✅ 回答チェックの関数（強化版）
 function checkAnswer() {
-  const userAnswer = Number(document.getElementById("answer").value);
+  const input = document.getElementById("answer").value;
+
+  if (input.trim() === "") {
+    alert("数字を入力してください！");
+    return;
+  }
+
+  const userAnswer = Number(input);
+  if (isNaN(userAnswer)) {
+    alert("有効な数字を入力してください！");
+    return;
+  }
+
   const currentIndex = randomIndexes[level - 1];
   const correct = problems[currentIndex].answer;
   const resultEl = document.getElementById("result");
@@ -81,14 +95,14 @@ function checkAnswer() {
   }
 }
 
-// 通常のスコア送信
+// ✅ スコア送信ボタン（通常）
 async function submitScore() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
   await sendScore(name, score);
 }
 
-// 「やめる（スコア送信）」ボタン処理
+// ✅ やめるボタンからの送信
 async function quitGame() {
   const name = document.getElementById("username").value || "名無し";
   const score = level - 1;
@@ -98,7 +112,7 @@ async function quitGame() {
   }
 }
 
-// Firestoreにスコアを記録
+// ✅ Firestore にスコア登録
 async function sendScore(name, score) {
   try {
     await addDoc(collection(db, "scores"), {
@@ -112,7 +126,7 @@ async function sendScore(name, score) {
   }
 }
 
-// ランキング表示
+// ✅ 全国ランキング表示（上位10件）
 async function loadRanking() {
   const list = document.getElementById("rankingList");
   list.innerHTML = "";
