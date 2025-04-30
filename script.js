@@ -26,7 +26,7 @@ let level = 1;
 let problems = [];
 let randomIndexes = [];
 
-fetch("problems_3.json")
+fetch("problems_1000_full.json")
   .then(res => res.json())
   .then(data => {
     problems = data;
