@@ -12,14 +12,14 @@ const firebaseConfig = {
   measurementId: "G-8LVCYVGWQZ"
 };
 
+// Firebase初期化
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ゲームロジック
 let level = 1;
 let problems = [];
 
-fetch("problems.json")
+fetch("problems_1000_full.json")
   .then(res => res.json())
   .then(data => {
     problems = data;
@@ -35,7 +35,7 @@ function showProblem() {
   }
 
   const prob = problems[level - 1];
-  document.getElementById("level").innerText = `レベル ${level}`;
+  document.getElementById("level").innerText = `レベル ${level} / ${problems.length}`;
   document.getElementById("sequence").innerText = prob.question;
   document.getElementById("answer").value = "";
   document.getElementById("result").innerText = "";
@@ -47,7 +47,7 @@ function checkAnswer() {
   const resultEl = document.getElementById("result");
 
   if (userAnswer === correct) {
-    resultEl.innerText = "✅ 正解！次のレベルへ";
+    resultEl.innerText = "✅ 正解！";
     resultEl.style.color = "green";
     level++;
     setTimeout(showProblem, 1000);
@@ -57,23 +57,38 @@ function checkAnswer() {
   }
 }
 
-// スコア送信
+// スコア送信（通常）
 async function submitScore() {
   const name = document.getElementById("username").value || "名無し";
+  const score = level - 1;
+  await sendScore(name, score);
+}
+
+// やめるボタンでスコア送信
+async function quitGame() {
+  const name = document.getElementById("username").value || "名無し";
+  const score = level - 1;
+  if (confirm(`現在のレベル ${score} を送信して終了しますか？`)) {
+    await sendScore(name, score);
+    alert("スコアを送信しました。ページをリロードすると再挑戦できます。");
+  }
+}
+
+// Firestoreにスコアを登録
+async function sendScore(name, score) {
   try {
     await addDoc(collection(db, "scores"), {
       name: name,
-      score: level - 1,
+      score: score,
       timestamp: Date.now()
     });
-    alert("スコア送信完了！");
     loadRanking();
   } catch (e) {
     alert("送信失敗：" + e);
   }
 }
 
-// ランキング表示
+// ランキング読み込み
 async function loadRanking() {
   const list = document.getElementById("rankingList");
   list.innerHTML = "";
@@ -89,4 +104,3 @@ async function loadRanking() {
     list.appendChild(li);
   });
 }
-
