@@ -7,6 +7,7 @@
 </head>
 <body>
   <h1>🔢 数列パズル</h1>
+
   <div id="game">
     <p id="level">レベル 1</p>
     <p id="sequence">読み込み中...</p>
@@ -18,6 +19,7 @@
   <div id="submitScore">
     <input type="text" id="username" placeholder="ニックネーム" />
     <button onclick="submitScore()">スコア送信</button>
+    <button onclick="quitGame()">やめる（スコア送信）</button>
   </div>
 
   <div id="ranking">
@@ -25,7 +27,6 @@
     <ul id="rankingList"></ul>
   </div>
 
-  <!-- Firebase SDKs -->
   <script type="module" src="script.js"></script>
 </body>
 </html>
